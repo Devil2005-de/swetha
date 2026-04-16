@@ -11,19 +11,15 @@ import java.util.List;
  */
 public class LibraryManagementSystem {
 
-    // Fine rate per extra day (in rupees)
     private static final double FINE_PER_DAY = 5.0;
-    // Allowed borrow period in days
     private static final int ALLOWED_DAYS = 10;
 
-    // User details
     private String userName;
     private String userId;
     private List<String> borrowedBooks;
     private LocalDate issueDate;
     private LocalDate returnDate;
 
-    // Constructor
     public LibraryManagementSystem(String userName, String userId) {
         this.userName = userName;
         this.userId = userId;
@@ -31,30 +27,30 @@ public class LibraryManagementSystem {
         this.issueDate = LocalDate.now();
     }
 
-    // Add a book to borrowed list
     public void borrowBook(String bookTitle) {
         borrowedBooks.add(bookTitle);
     }
 
-    // Return all books (set return date)
     public void returnBooks() {
         this.returnDate = LocalDate.now();
     }
 
-    // Calculate fine based on extra days beyond allowed period
+    /**
+     * Set a custom return date (primarily for testing).
+     */
+    public void setReturnDate(LocalDate returnDate) {
+        this.returnDate = returnDate;
+    }
+
     public double calculateFine() {
         if (returnDate == null) {
-            return 0.0; // Not returned yet
+            return 0.0;
         }
         long daysBorrowed = ChronoUnit.DAYS.between(issueDate, returnDate);
         long extraDays = daysBorrowed - ALLOWED_DAYS;
-        if (extraDays <= 0) {
-            return 0.0;
-        }
-        return extraDays * FINE_PER_DAY;
+        return extraDays > 0 ? extraDays * FINE_PER_DAY : 0.0;
     }
 
-    // Display full borrowing status
     public String getBorrowingStatus() {
         StringBuilder sb = new StringBuilder();
         sb.append("===== Library Borrowing Status =====\n");
@@ -82,7 +78,7 @@ public class LibraryManagementSystem {
     public LocalDate getIssueDate() { return issueDate; }
     public LocalDate getReturnDate() { return returnDate; }
 
-    // Main method – interactive demo
+    // Main method (interactive demo)
     public static void main(String[] args) {
         java.util.Scanner scanner = new java.util.Scanner(System.in);
         System.out.print("Enter user name: ");
@@ -103,7 +99,7 @@ public class LibraryManagementSystem {
         System.out.print("Enter return date (YYYY-MM-DD) or press Enter for today: ");
         String returnDateStr = scanner.nextLine();
         if (!returnDateStr.isEmpty()) {
-            lib.returnDate = LocalDate.parse(returnDateStr);
+            lib.setReturnDate(LocalDate.parse(returnDateStr));
         } else {
             lib.returnBooks();
         }
